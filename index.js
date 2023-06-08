@@ -79,8 +79,27 @@ const DB = {
 
 // Rotas
 app.get('/games', authToken, (request, response) => {
+
+    const HATEOAS = [
+        {
+            href: 'http://localhost:3000/game/0',
+            method: 'DELETE',
+            rel: 'deleete_game'
+        },
+        {
+            href: 'http://localhost:3000/game/0',
+            method: 'GET',
+            rel: 'get_game'
+        },
+        {
+            href: 'http://localhost:3000/auth',
+            method: 'POST',
+            rel: 'login'
+        },
+    ]
+
     response.statusCode = 200
-    response.json(DB.games)
+    response.json({games: DB.games, _links: HATEOAS })
 })
 
 app.get('/game/:id', authToken, (request, response) => {
@@ -91,9 +110,32 @@ app.get('/game/:id', authToken, (request, response) => {
         const idNum = parseInt(id)
         const game = DB.games.find(g => g.id === idNum)
 
+        const HATEOAS = [
+            {
+                href: 'http://localhost:3000/game/'+ idNum,
+                method: 'DELETE',
+                rel: 'delete_game'
+            },
+            {
+                href: 'http://localhost:3000/game/'+ idNum,
+                method: 'PUT',
+                rel: 'edit_game'
+            },
+            {
+                href: 'http://localhost:3000/game/'+ idNum,
+                method: 'GET',
+                rel: 'get_game'
+            },
+            {
+                href: 'http://localhost:3000/games',
+                method: 'GET',
+                rel: 'get_all_games'
+            },
+        ]
+
         if (game != undefined) {
             response.statusCode = 200
-            response.json(game)
+            response.json({game, _links: HATEOAS})
         } else {
             response.sendStatus(404)
         }
